@@ -16,7 +16,7 @@
 # Playbook to create Directory for current Date 
    - name: Create Directory {{hostvars.localhost.DTG}}
      file:
-      path: /backups/{{hostvars.localhost.DTG}}
+      path: /home/scott/backups/{{hostvars.localhost.DTG}}
       state: directory
 
 
@@ -31,10 +31,10 @@
         commands: show run
       register: config
 
-    - name: Save output to /backups/{{hostvars.localhost.DTG}}
+    - name: Save output to /home/scott/backups/{{hostvars.localhost.DTG}}
       copy:
         content: "{{config.stdout[0]}}"
-        dest: "/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
+        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
 
     - name: Save the config always
       ios_config:
@@ -68,8 +68,8 @@
 
    - name: "Put all the files together into one nice text file"
      template: 
-       src: ./template.j2 
-       dest: "/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-showoutput.txt"
+       src: /home/scott/template.j2 
+       dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-showoutput.txt"
 
 - hosts: Switches
   connection: local
@@ -101,8 +101,8 @@
 
    - name: "Put all the files together into one nice text file"
      template: 
-       src: /template.j2 
-       dest: "/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-showoutput.txt"
+       src: /home/scott/template.j2 
+       dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-showoutput.txt"
        
   # Playbook for ME1200s
 - hosts: ME1200
@@ -121,10 +121,10 @@
         commands: show run
       register: config
 
-    - name: Save output to ~/backups/{{hostvars.localhost.DTG}}
+    - name: Save output to /home/scott/backups/{{hostvars.localhost.DTG}}
       copy:
         content: "{{config.stdout[0]}}"
-        dest: "/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
+        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
 
     - name: Save the config always
       ios_config:
@@ -142,7 +142,7 @@
         commands: show run
       register: config
 
-    - name: Save output to /backups/{{hostvars.localhost.DTG}}
+    - name: Save output to /home/scott/backups/{{hostvars.localhost.DTG}}
       copy:
         content: "{{config.stdout[0]}}"
-        dest: "/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
+        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
