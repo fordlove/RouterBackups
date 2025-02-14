@@ -9,12 +9,12 @@
          output: mikrotik_config.rsc
          register: config_export 
 
-       - name: Save configuration to file
-         delegate_to: localhost
-         file:
-           path: /home/scott/backups//{{ inventory_hostname }}_config.rsc
-           content: {{ config_export.result }}
-           mode: '0644'          
+#       - name: Save configuration to file
+#         delegate_to: localhost
+#         file:
+#           path: /home/scott/backups//{{ inventory_hostname }}_config.rsc
+#           content: {{ config_export.result }}
+#           mode: '0644'          
 
 #       - name: Fetch the exported file from MikroTik router
 #         ansible.builtin.fetch:
