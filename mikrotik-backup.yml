@@ -20,20 +20,20 @@
       state: directory
 
 # Playbook pull the MikroTik Router Config File
-   hosts: mikrotik_routers
-   gather_facts: no
-   tasks:
-     - name: SSH into MikroTik router and export configuration
-       ansible.builtin.command:
-         cmd: /export file=config_backup
-       register: config_export
-       become: yes
-       become_method: sudo
+   - hosts: mikrotik_routers
+     gather_facts: no
+     tasks:
+       - name: SSH into MikroTik router and export configuration
+         ansible.builtin.command:
+           cmd: /export file=config_backup
+         register: config_export
+         become: yes
+         become_method: sudo
 
-     - name: Fetch the exported file from MikroTik router
-       ansible.builtin.fetch:
-         src: /file-store/config_backup.rsc
-         dest: /home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt
-         flat: yes
-       when: export_output.rc == 0
+       - name: Fetch the exported file from MikroTik router
+         ansible.builtin.fetch:
+           src: /file-store/config_backup.rsc
+           dest: /home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt
+           flat: yes
+         when: export_output.rc == 0
 
