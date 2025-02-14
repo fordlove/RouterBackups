@@ -1,0 +1,41 @@
+---
+ # Playbook to get system time and append it to backup files
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+   - name: Get ansible date/time facts
+     setup:
+       filter: "ansible_date_time"
+       gather_subset: "!all"
+
+   - name: Store DTG as fact
+     set_fact:
+       DTG: "{{ ansible_date_time.date }}"
+       
+# Playbook to create Directory for current Date 
+   - name: Create Directory {{hostvars.localhost.DTG}}
+     file:
+      path: /home/scott/backups/{{hostvars.localhost.DTG}}
+      state: directory
+
+# Playbook pull the MikroTik Router Config File
+---
+   - name: Export MikroTik Router Configuration
+     hosts: mikrotik_routers
+     gather_facts: no
+     tasks:
+       - name: SSH into MikroTik router and export configuration
+         ansible.builtin.command:
+           cmd: /export file=config_backup
+         register: export_output
+         become: yes
+         become_method: sudo
+
+       - name: Fetch the exported file from MikroTik router
+         ansible.builtin.fetch:
+           src: /file-store/config_backup.rsc
+           dest: ./config_backup.rsc
+           flat: yes
+         when: export_output.rc == 0
+
