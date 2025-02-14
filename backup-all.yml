@@ -39,6 +39,21 @@
     - name: Save the config always
       ios_config:
         save_when: always
+        
+# Playbook for MikroTik
+- hosts: mikrotik
+  gather_facts: false
+
+  tasks:
+    - name: Backup Mikrotik configs
+      routeros_command:
+        commands: /export
+      register: config
+
+    - name: Save output to config-backups
+      copy:
+        content: "{{config.stdout[0]}}"
+        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
 
 - hosts: Routers
   connection: local
@@ -147,17 +162,4 @@
         content: "{{config.stdout[0]}}"
         dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
 
-# Playbook for MikroTik
-- hosts: mikrotik
-  gather_facts: false
 
-  tasks:
-    - name: Backup Mikrotik configs
-      routeros_command:
-        commands: /export
-      register: config
-
-    - name: Save output to config-backups
-      copy:
-        content: "{{config.stdout[0]}}"
-        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
