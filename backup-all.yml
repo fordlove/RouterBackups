@@ -1,0 +1,163 @@
+---
+ # Playbook to get system time and append it to backup files
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+   - name: Get ansible date/time facts
+     setup:
+       filter: "ansible_date_time"
+       gather_subset: "!all"
+
+   - name: Store DTG as fact
+     set_fact:
+       DTG: "{{ ansible_date_time.date }}"
+       
+# Playbook to create Directory for current Date 
+   - name: Create Directory {{hostvars.localhost.DTG}}
+     file:
+      path: /home/scott/backups/{{hostvars.localhost.DTG}}
+      state: directory
+
+
+
+# Playbook to run show commands and save to file 
+- hosts: All,!ME1200,!IOSXR
+  gather_facts: false
+
+  tasks:
+    - name: Backup config
+      ios_command:
+        commands: show run
+      register: config
+
+    - name: Save output to /home/scott/backups/{{hostvars.localhost.DTG}}
+      copy:
+        content: "{{config.stdout[0]}}"
+        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
+
+    - name: Save the config always
+      ios_config:
+        save_when: always
+
+- hosts: Routers
+  connection: local
+  gather_facts: false
+  vars:
+    command_list:
+      - show ver | in System image
+    #  - show etherchannel summary 
+      - show cdp neigh 
+    #  - show environment all
+      - show ip ospf int brief 
+      - show ip ospf neigh 
+      - show cdp neighbors detail
+    #  - show clock
+    #  - show users
+    #  - show boot
+    #  - show int status | inc connected
+    #  - show arp
+    #  - show ip interface brief | exc admin
+      - show interface desc
+  
+  tasks:
+   - name: Run the SHOW commands and save output 
+     ios_command:
+       commands: "{{ command_list }}"
+     register: showoutput
+
+   - name: "Put all the files together into one nice text file"
+     template: 
+       src: /home/scott/template.j2 
+       dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-showoutput.txt"
+
+- hosts: Switches
+  connection: local
+  gather_facts: false
+  vars:
+    command_list:
+      - show ver | in System image
+      - show etherchannel summary 
+      - show cdp neigh 
+      - show vlan
+      - show mac address-table
+    #  - show environment all
+    #  - show ip ospf int brief 
+    #  - show ip ospf neigh 
+    #  - show cdp neighbors detail
+    #  - show clock
+    #  - show users
+    #  - show boot
+    #  - show int status | inc connected
+    #  - show arp
+    #  - show ip interface brief | exc admin
+      - show interface desc
+
+  tasks:
+   - name: Run the SHOW commands and save output 
+     ios_command:
+       commands: "{{ command_list }}"
+     register: showoutput
+
+   - name: "Put all the files together into one nice text file"
+     template: 
+       src: /home/scott/template.j2 
+       dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-showoutput.txt"
+       
+  # Playbook for ME1200s
+- hosts: ME1200
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Enter True CLI mode 
+      ios_command:
+        commands:
+          - v i v
+          - v i e
+
+    - name: Backup config
+      ios_command:
+        commands: show run
+      register: config
+
+    - name: Save output to /home/scott/backups/{{hostvars.localhost.DTG}}
+      copy:
+        content: "{{config.stdout[0]}}"
+        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
+
+    - name: Save the config always
+      ios_config:
+        save_when: always
+
+
+  # Playbook for IOSXR
+- hosts: IOSXR
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Backup config
+      iosxr_command:
+        commands: show run
+      register: config
+
+    - name: Save output to /home/scott/backups/{{hostvars.localhost.DTG}}
+      copy:
+        content: "{{config.stdout[0]}}"
+        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
+
+# Playbook for MikroTik
+- hosts: mikrotik
+  gather_facts: false
+
+  tasks:
+    - name: Backup Mikrotik configs
+      routeros_command:
+        commands: /export
+      register: config
+
+    - name: Save output to config-backups
+      copy:
+        content: "{{config.stdout[0]}}"
+        dest: "/home/scott/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
