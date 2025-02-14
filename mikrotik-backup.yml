@@ -23,18 +23,18 @@
 - hosts: mikrotik
   gather_facts: no
   tasks:
-    - name: SSH into MikroTik router and export configuration
-      ansible.builtin.command:
-      path: /system/export
-      output: mikrotik_config.rsc
-      register: config_export 
-      become: yes
-      become_method: sudo
+  - name: SSH into MikroTik router and export configuration
+    ansible.builtin.command:
+    path: /system/export
+    output: mikrotik_config.rsc
+    register: config_export 
+    become: yes
+    become_method: sudo
 
-    - name: Fetch the exported file from MikroTik router
-      ansible.builtin.fetch:
-        src: /file-store/mikrotik_config.rsc
-        dest: /home/scott/backups/{{hostvars.localhost.DTG}}/mikrotik_config.rsc
-        flat: yes
-      when: export_output.rc == 0
+  - name: Fetch the exported file from MikroTik router
+    ansible.builtin.fetch:
+      src: /file-store/mikrotik_config.rsc
+      dest: /home/scott/backups/{{hostvars.localhost.DTG}}/mikrotik_config.rsc
+      flat: yes
+    when: export_output.rc == 0
 
