@@ -6,7 +6,7 @@
   tasks:
     - name: Backup Mikrotik configs
       routeros_command:
-        commands: /export
+        commands: export
       register: config
 
     - name: Save output to config-backups
