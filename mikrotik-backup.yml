@@ -1,24 +1,4 @@
 ---
- # Playbook to get system time and append it to backup files
-- hosts: localhost
-  gather_facts: false
-
-  tasks:
-   - name: Get ansible date/time facts
-     setup:
-       filter: "ansible_date_time"
-       gather_subset: "!all"
-
-   - name: Store DTG as fact
-     set_fact:
-       DTG: "{{ ansible_date_time.date }}"
-       
-# Playbook to create Directory for current Date 
-   - name: Create Directory {{hostvars.localhost.DTG}}
-     file:
-      path: /home/scott/backups/{{hostvars.localhost.DTG}}
-      state: directory
-
 # Playbook pull the MikroTik Router Config File
    - hosts: mikrotik
      gather_facts: no
