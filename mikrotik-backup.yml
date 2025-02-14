@@ -1,6 +1,6 @@
 ---
 # Playbook pull the MikroTik Router Config File
-- hosts: Mikrotik
+- hosts: mikrotik
   gather_facts: false
   
   tasks:
