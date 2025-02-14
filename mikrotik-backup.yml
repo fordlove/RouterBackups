@@ -11,5 +11,5 @@
 
     - name: Save output to config-backups
       copy:
-        content: "{{config.stdout[0]}}"
-        dest: "{/home/scott/backups/{{inventory_hostname}}-config.txt"
+        content: config
+        dest: /home/scott/backups/mikrotik-config.txt
