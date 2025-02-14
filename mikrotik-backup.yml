@@ -25,7 +25,7 @@
   tasks:
     - name: SSH into MikroTik router and export configuration
       ansible.builtin.command:
-        cmd: /export file=config_backup
+        cmd: export file=config_backup
       register: export_output
       become: yes
       become_method: sudo
