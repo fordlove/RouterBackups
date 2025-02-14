@@ -20,8 +20,7 @@
       state: directory
 
 # Playbook pull the MikroTik Router Config File
-   - name: Export MikroTik Router Configuration
-     hosts: mikrotik_routers
+   - hosts: mikrotik
      gather_facts: no
      tasks:
        - name: SSH into MikroTik router and export configuration
