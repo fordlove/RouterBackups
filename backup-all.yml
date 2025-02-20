@@ -43,7 +43,8 @@
 # Playbook for MikroTik
 - hosts: mikrotik
   gather_facts: false
-
+  vars_files:
+    - Mikrotik.yml
   tasks:
     - name: Backup Mikrotik configs
       routeros_command:
